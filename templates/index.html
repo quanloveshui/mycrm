@@ -36,6 +36,7 @@
 
 
       <ul class="nav nav-sidebar">
+          {#  实现不同的用户登录看到不用的菜单#}
           {% for role in  request.user.userprofile.roles.select_related %}
             {% for menu in role.menus.select_related %}
                 <li><a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name %}{% endif %}">{{ menu.name }}</a></li>
