@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crm',
+    'myadmin',
+    'student',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,8 @@ ROOT_URLCONF = 'PreCRM.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),
+                 os.path.join(BASE_DIR, 'myadmin/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,6 +129,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
      os.path.join(BASE_DIR, "statics"),
+os.path.join(BASE_DIR,'myadmin/statics'),
 )
 
 LOGIN_URL = '/login/'
