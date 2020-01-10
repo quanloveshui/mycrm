@@ -1,0 +1,3 @@
+class BaseMyAdmin(object):
+
+    pass
