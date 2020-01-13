@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import  login_required
 from  django import conf
@@ -18,6 +18,16 @@ django项目启动后会执行app_setup中myadmin_auto_discover函数，此函�
 def app_index(request):
 
     return render(request,'myadmin/app_index.html',{'site':site})
+
+
+def table_obj_list(request,app_name,model_name):
+    #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
+    admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类
+    model_obj=admin_class.model#获取model中对应的的表对象--><class 'crm.models.Customer'>
+    querysets = admin_class.model.objects.all()#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
+    #print(querysets)
+
+    return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class})
 
 
 #登录

@@ -4,3 +4,5 @@ django和bootstrap开发crm系统
 三、自己写app实现django的admin相关功能
     1、创建app：myadmin和student
     2、myadmin实现独立的登录、首页的相关功能（模板及静态文件、登录函数直接拷贝crm中）
+    3、实现myadmin自动发现和注册
+    4、实现根据list_display中的配置在前端页面显示后端数据
