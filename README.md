@@ -7,3 +7,4 @@ django和bootstrap开发crm系统
     3、实现myadmin自动发现和注册
     4、实现根据list_display中的配置在前端页面显示后端数据
     5、用户未定义list_display时默认显示所有字段数据
+    6、实现根据list_filter中的配置完成多条件过滤
