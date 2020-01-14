@@ -21,7 +21,10 @@ class AdminSite(object):
         model_name = model_class._meta.model_name
         # 为了避免多个model共享同一个BaseMyAdmin内存对象
         if not admin_class:
-            admin_class = BaseMyAdmin()#用户注册时如果未传入自定义的类，使用默认的类BaseMyAdmin
+            admin_class = BaseMyAdmin()#用户注册时如果未传入自定义的类，使用默认的类BaseMyAdmin，显示所有字段数据
+            field_obj=model_class._meta.fields#获取字段对象
+            list_display=[field_obj[i].name for i in range(len(field_obj))] #所有字段名组成列表
+            admin_class.list_display=list_display
         else:
             admin_class = admin_class()
 

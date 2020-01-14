@@ -6,3 +6,4 @@ django和bootstrap开发crm系统
     2、myadmin实现独立的登录、首页的相关功能（模板及静态文件、登录函数直接拷贝crm中）
     3、实现myadmin自动发现和注册
     4、实现根据list_display中的配置在前端页面显示后端数据
+    5、用户未定义list_display时默认显示所有字段数据
