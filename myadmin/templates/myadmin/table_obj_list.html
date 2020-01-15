@@ -8,6 +8,7 @@
 
         <!--{{ querysets }}-->
     <div>
+        {% if  admin_class.list_filter %}
             <form>
 
                  {% for filter_column in admin_class.list_filter %}
@@ -17,6 +18,7 @@
                  <input type="submit" value="过滤">
 
             </form>
+        {% endif %}
 
         </div>
 
@@ -24,9 +26,14 @@
        <table class="table table-striped">
             <thead>
                 <tr>
-                    {% for column in admin_class.list_display %}
-                        <th>{{ column }}</th>
-                    {% endfor %}
+                    {% if admin_class.list_display %}
+                          {% for column in admin_class.list_display %}
+                               <th>{{ column }}</th>
+                           {% endfor %}
+                    {% else %}
+                    <!--未定义list_display时显示表名-->
+                          <th>{% get_model_name admin_class %}</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
