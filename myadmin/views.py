@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import  login_required
 from  django import conf
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from myadmin import app_setup
 from crm import models
 from myadmin.sites import  site
@@ -24,6 +25,8 @@ def app_index(request):
 def get_filter_result(request,querysets):
     filter_conditions = {}
     for key,val in request.GET.items():
+        if key in ('_page', '_o', '_q'):#去掉关键字不作为过滤条件
+            continue
         if val:
             filter_conditions[key] =  val
 
@@ -37,12 +40,33 @@ def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
     admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类，未定义时使用默认的BaseAdmin类
     model_obj=admin_class.model#获取model中对应的的表对象--><class 'crm.models.Customer'>
-    querysets = admin_class.model.objects.all()#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
+    querysets = admin_class.model.objects.all().order_by("id")#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
     #print(querysets)
     querysets, filter_condtions = get_filter_result(request, querysets)
     admin_class.filter_condtions = filter_condtions#前端的过滤条件
 
     #print('request.GET>>>>>>>>>>>',request.GET) #<QueryDict: {'source': [''], 'consultant': [''], 'status': ['0'], 'date__gte': ['']}>
+    #实现分页
+    paginator = Paginator(querysets, 2)# 每页2条记录
+    """
+    per_page: 每页显示条目数量 例如上面的2
+    count:    数据总个数
+    num_pages:总页数
+    page_range:总页数的索引范围，如: (1,10),(1,200)
+    page:     page对象
+    """
+    page = request.GET.get('_page')#获取当前页
+    try:
+        querysets = paginator.page(page)#获取当前页所有的model对象数据 可以循环获取每一个数据的对象 querysets--><class 'django.core.paginator.Page'>
+        #print(querysets) #<Page 2 of 3>
+    except PageNotAnInteger:
+        # 获取的_page不是数字返回第一页
+        querysets = paginator.page(1)
+    except EmptyPage:
+        # 返回最后一页.
+        querysets = paginator.page(paginator.num_pages)
+    #print('>>>>>>>>>>>>',request.GET) #<QueryDict: {'_page': ['2']}>
+    # print("admin class",admin_class.model )
 
     return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class})
 

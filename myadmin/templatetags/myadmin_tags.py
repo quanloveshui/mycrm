@@ -88,3 +88,25 @@ def get_model_name(admin_class):
      获取表名
     """
     return admin_class.model._meta.model_name.upper()
+
+
+#分页
+@register.simple_tag
+def render_paginator(querysets,admin_class):
+    ele = '''
+      <ul class="pagination">
+    '''
+    for i in querysets.paginator.page_range:
+        if abs(querysets.number - i) < 2 :#设置显示3个页码
+            active = ''
+            if querysets.number == i : #current page
+                active = 'active'
+            p_ele = '''<li class="%s"><a href="?_page=%s">%s</a></li>'''  % (active,i,i)
+
+            ele += p_ele
+
+
+
+    ele += "</ul>"
+
+    return mark_safe(ele)
