@@ -4,7 +4,7 @@ from crm import models
 
 
 class CustomerAdmin(BaseMyAdmin):
-    list_display = ['name','source','consult_course','consultant','content','status','date']
+    list_display = ['id','name','source','consult_course','consultant','content','status','date']
     list_filter = ['source','consultant','status','date']
     search_fields = ['contact','consultant__name']
 

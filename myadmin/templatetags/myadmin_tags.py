@@ -110,3 +110,37 @@ def render_paginator(querysets,admin_class):
     ele += "</ul>"
 
     return mark_safe(ele)
+
+
+
+#处理排序相关
+#处理_o=是正还是负
+@register.simple_tag
+def get_sorted_column(column,sorted_column,forloop):
+    #sorted_column = {'name': '-0'}
+    #column当前列
+    if column in sorted_column:#这一列被排序了,判断上一次排序是什么顺序,本次取反
+        last_sort_index = sorted_column[column]
+        if last_sort_index.startswith('-'):#上一次是正序，这一次为反序
+            this_time_sort_index = last_sort_index.strip('-')
+        else:
+            this_time_sort_index = '-%s' % last_sort_index
+        return this_time_sort_index
+    else:
+        #直接返回列的索引
+        return forloop
+
+#在排序的每一列在图标
+@register.simple_tag
+def render_sorted_arrow(column,sorted_column):
+    print(sorted_column)
+    if column in sorted_column:  # 这一列被排序了,
+        last_sort_index = sorted_column[column]
+        if last_sort_index.startswith('-'):
+            arrow_direction = 'bottom'
+        else:
+            arrow_direction = 'top'
+        ele = '''<span class="glyphicon glyphicon-triangle-%s" aria-hidden="true"></span>''' % arrow_direction
+        print(ele)
+        return mark_safe(ele)
+    return ''

@@ -36,6 +36,27 @@ def get_filter_result(request,querysets):
     return querysets.filter(**filter_conditions),filter_conditions
 
 
+def get_orderby_result(request,querysets,admin_class):
+    """
+    排序
+    排序后再分页
+    """
+
+    current_ordered_column = {}
+    orderby_index = request.GET.get('_o')
+    if orderby_index:
+        orderby_key =  admin_class.list_display[ abs(int(orderby_index)) ]
+        current_ordered_column[orderby_key] = orderby_index #current_ordered_column传到前端，为了让前端知道当前排序的列，以及下一次排序是正还是负
+
+        if orderby_index.startswith('-'):
+            orderby_key =  '-'+ orderby_key
+
+        return querysets.order_by(orderby_key),current_ordered_column
+    else:
+        return querysets,current_ordered_column
+
+
+
 def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
     admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类，未定义时使用默认的BaseAdmin类
@@ -44,6 +65,9 @@ def table_obj_list(request,app_name,model_name):
     #print(querysets)
     querysets, filter_condtions = get_filter_result(request, querysets)
     admin_class.filter_condtions = filter_condtions#前端的过滤条件
+
+    #单列排序
+    querysets, sorted_column = get_orderby_result(request, querysets, admin_class)
 
     #print('request.GET>>>>>>>>>>>',request.GET) #<QueryDict: {'source': [''], 'consultant': [''], 'status': ['0'], 'date__gte': ['']}>
     #实现分页
@@ -68,7 +92,7 @@ def table_obj_list(request,app_name,model_name):
     #print('>>>>>>>>>>>>',request.GET) #<QueryDict: {'_page': ['2']}>
     # print("admin class",admin_class.model )
 
-    return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class})
+    return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class,'sorted_column':sorted_column})
 
 
 #登录

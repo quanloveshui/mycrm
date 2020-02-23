@@ -9,3 +9,4 @@ django和bootstrap开发crm系统
     5、用户未定义list_display时默认显示所有字段数据
     6、实现根据list_filter中的配置完成多条件过滤
     7、实现分页功能
+    8、实现按照某列进行排序
