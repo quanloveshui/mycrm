@@ -90,9 +90,28 @@ def get_model_name(admin_class):
     return admin_class.model._meta.model_name.upper()
 
 
+
+
+@register.simple_tag
+def render_filtered_args(admin_class, render_html=True):
+    '''
+    拼接筛选的字段
+    便于分页过滤排序组合使用
+    '''
+    if admin_class.filter_condtions:
+        ele = ''
+        for k, v in admin_class.filter_condtions.items():
+             ele += '&%s=%s' % (k, v)
+        if render_html:
+            return mark_safe(ele)
+        else:
+            return ele
+    else:
+        return ''
+
 #分页
 @register.simple_tag
-def render_paginator(querysets,admin_class):
+def render_paginator(querysets,admin_class,sorted_column):
     ele = '''
       <ul class="pagination">
     '''
@@ -101,7 +120,14 @@ def render_paginator(querysets,admin_class):
             active = ''
             if querysets.number == i : #current page
                 active = 'active'
-            p_ele = '''<li class="%s"><a href="?_page=%s">%s</a></li>'''  % (active,i,i)
+
+            #分页和排序、过滤组合
+            filter_ele = render_filtered_args(admin_class)
+            sorted_ele = ''
+            if sorted_column:
+                sorted_ele = '&_o=%s' % list(sorted_column.values())[0]
+
+            p_ele = '''<li class="%s"><a href="?_page=%s%s%s">%s</a></li>''' % (active, i, filter_ele, sorted_ele, i)
 
             ele += p_ele
 
@@ -130,10 +156,12 @@ def get_sorted_column(column,sorted_column,forloop):
         #直接返回列的索引
         return forloop
 
+
+
 #在排序的每一列在图标
 @register.simple_tag
 def render_sorted_arrow(column,sorted_column):
-    print(sorted_column)
+    #print(sorted_column)
     if column in sorted_column:  # 这一列被排序了,
         last_sort_index = sorted_column[column]
         if last_sort_index.startswith('-'):
@@ -141,6 +169,6 @@ def render_sorted_arrow(column,sorted_column):
         else:
             arrow_direction = 'top'
         ele = '''<span class="glyphicon glyphicon-triangle-%s" aria-hidden="true"></span>''' % arrow_direction
-        print(ele)
+        #print(ele)
         return mark_safe(ele)
     return ''
