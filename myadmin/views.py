@@ -6,6 +6,7 @@ from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 from myadmin import app_setup
 from crm import models
 from myadmin.sites import  site
+from django.db.models import Q
 
 
 app_setup.myadmin_auto_discover()
@@ -56,6 +57,18 @@ def get_orderby_result(request,querysets,admin_class):
         return querysets,current_ordered_column
 
 
+#搜索
+def get_serached_result(request,querysets,admin_class):
+    search_key = request.GET.get('_q')
+    if search_key :
+        q = Q()
+        q.connector = 'OR'
+        for search_field in admin_class.search_fields:
+            q.children.append(("%s__contains" % search_field, search_key))
+
+        return  querysets.filter(q)
+    return querysets
+
 
 def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
@@ -65,6 +78,10 @@ def table_obj_list(request,app_name,model_name):
     #print(querysets)
     querysets, filter_condtions = get_filter_result(request, querysets)
     admin_class.filter_condtions = filter_condtions#前端的过滤条件
+
+    #searched queryset result
+    querysets = get_serached_result(request,querysets,admin_class)
+    admin_class.search_key = request.GET.get('_q','')
 
     #单列排序
     querysets, sorted_column = get_orderby_result(request, querysets, admin_class)

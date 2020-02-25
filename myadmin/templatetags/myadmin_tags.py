@@ -172,3 +172,9 @@ def render_sorted_arrow(column,sorted_column):
         #print(ele)
         return mark_safe(ele)
     return ''
+
+
+
+@register.simple_tag
+def get_current_sorted_column_index(sorted_column):
+    return list(sorted_column.values())[0] if sorted_column else ''
