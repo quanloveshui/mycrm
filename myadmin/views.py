@@ -7,6 +7,7 @@ from myadmin import app_setup
 from crm import models
 from myadmin.sites import  site
 from django.db.models import Q
+from myadmin import form_handle
 
 
 app_setup.myadmin_auto_discover()
@@ -119,10 +120,20 @@ def table_obj_list(request,app_name,model_name):
 @login_required
 def table_obj_change(request,app_name,model_name,obj_id):
     """
-    django modelform简单使用
-    """
+    #django modelform简单使用
     from crm.forms import CustomerForm
     form_obj = CustomerForm()
+    """
+    """
+    动态生成modelform 使用tpye生成类
+    """
+    admin_class = site.enabled_admins[app_name][model_name]
+    #print(">>>>>>>>>>>>>>",admin_class.model)
+    #执行函数form_handle.create_dynamic_model_form返回一个类  dynamic_form-><class 'django.forms.widgets.DynamicModelForm'>
+    model_form = form_handle.create_dynamic_model_form(admin_class)
+    #类实例化
+    form_obj = model_form()
+
     return render(request, 'myadmin/table_obj_change.html',locals())
 
 
