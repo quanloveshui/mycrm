@@ -63,7 +63,7 @@ def  build_table_row(obj,admin_class):
 
     ele = ""
     if admin_class.list_display:#定义list_display时按照定义的数据进行显示
-        for column_name in admin_class.list_display:
+        for index,column_name in enumerate(admin_class.list_display):
 
             column_obj = admin_class.model._meta.get_field(column_name) #获取app的model某个表中列的对象  a=models.Customer._meta.get_field('name')-->django.db.models.fields.CharField
             if column_obj.choices: #get_xxx_display  如果是choice字段获取对应的值,否则通过反射直接获取field对应的值
@@ -72,10 +72,14 @@ def  build_table_row(obj,admin_class):
                 column_data = getattr(obj,column_name)#a=models.Customer.objects.all()获取到QuerySet集合后，可以通过反射获取字段对应的值getattr(i,'name')-->i为循环时每一个QuerySet对象
 
             td_ele = "<td>%s</td>"% column_data
+            #如果是第一列用户点进去可以编辑
+            if index == 0:
+                td_ele = "<td><a href='%s/change/'>%s</a></td>" % (obj.id, column_data)
             ele += td_ele
     else:
         # 没定义list_display时显示表名
-        td_ele = "<td>%s</td>" % obj #显示__str__方法中定义的返回值
+        #td_ele = "<td>%s</td>" % obj #显示__str__方法中定义的返回值
+        td_ele = "<td><a href='%s/change/'>%s</a></td>" % (obj.id, obj)
 
         ele += td_ele
 

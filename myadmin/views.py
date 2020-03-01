@@ -112,6 +112,20 @@ def table_obj_list(request,app_name,model_name):
     return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class,'sorted_column':sorted_column})
 
 
+
+
+
+#编辑信息
+@login_required
+def table_obj_change(request,app_name,model_name,obj_id):
+    """
+    django modelform简单使用
+    """
+    from crm.forms import CustomerForm
+    form_obj = CustomerForm()
+    return render(request, 'myadmin/table_obj_change.html',locals())
+
+
 #登录
 def acc_login(request):
     error_msg = ''

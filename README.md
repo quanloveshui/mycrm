@@ -12,3 +12,4 @@ django和bootstrap开发crm系统
     8、实现按照某列进行排序
     9、完成分页排序筛选组合使用
     10、完成搜索功能
+    11、django modelform简单使用，完成编辑页面显示
