@@ -14,3 +14,4 @@ django和bootstrap开发crm系统
     10、完成搜索功能
     11、django modelform简单使用，完成编辑页面显示
     12、动态生成modelform，完成不同页面的显示
+    13、为动态modelform添加样式
