@@ -10,7 +10,7 @@ def create_dynamic_model_form(admin_class):
 
     #为动态modelform添加样式
     def __new__(cls, *args, **kwargs):
-        print("__new__", cls, args, kwargs)
+        #print("__new__", cls, args, kwargs)
         for field_name in cls.base_fields:
             filed_obj = cls.base_fields[field_name]
             filed_obj.widget.attrs.update({'class': 'form-control'})
@@ -19,8 +19,6 @@ def create_dynamic_model_form(admin_class):
     #用type生成类
     #dynamic_form = type("DynamicModelForm" ,(ModelForm,) ,{'Meta' :Meta})
     dynamic_form = type("DynamicModelForm", (ModelForm,), {'Meta': Meta, '__new__': __new__})
-
-
 
 
     print('>>>>>>>>>>',dynamic_form) #<class 'django.forms.widgets.DynamicModelForm'>
