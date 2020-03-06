@@ -33,7 +33,10 @@ class Customer(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return ""
 
     class Meta:
         verbose_name ="客户表"

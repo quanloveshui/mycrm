@@ -75,7 +75,7 @@ def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
     admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类，未定义时使用默认的BaseAdmin类
     model_obj=admin_class.model#获取model中对应的的表对象--><class 'crm.models.Customer'>
-    querysets = admin_class.model.objects.all().order_by("id")#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
+    querysets = admin_class.model.objects.all().order_by("-id")#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
     #print(querysets)
     querysets, filter_condtions = get_filter_result(request, querysets)
     admin_class.filter_condtions = filter_condtions#前端的过滤条件
@@ -89,7 +89,7 @@ def table_obj_list(request,app_name,model_name):
 
     #print('request.GET>>>>>>>>>>>',request.GET) #<QueryDict: {'source': [''], 'consultant': [''], 'status': ['0'], 'date__gte': ['']}>
     #实现分页
-    paginator = Paginator(querysets, 2)# 每页2条记录
+    paginator = Paginator(querysets, 3)# 每页2条记录
     """
     per_page: 每页显示条目数量 例如上面的2
     count:    数据总个数
@@ -131,11 +131,37 @@ def table_obj_change(request,app_name,model_name,obj_id):
     #print(">>>>>>>>>>>>>>",admin_class.model)
     #执行函数form_handle.create_dynamic_model_form返回一个类  dynamic_form-><class 'django.forms.widgets.DynamicModelForm'>
     model_form = form_handle.create_dynamic_model_form(admin_class)
-    #类实例化
-    form_obj = model_form()
+    # 类实例化
+    #form_obj = model_form()
+    obj = admin_class.model.objects.get(id=obj_id)
+    if request.method == "GET":
+        # 把要修改的对象通过 instance 传入form组件中   必须为本类的对象
+        form_obj = model_form(instance=obj)
+        #print(">>>>",list(form_obj)[0]) #<input type="text" name="name" value="客户2" maxlength="32" class="form-control" id="id_name">
+    elif request.method == "POST":
+        # 有instance代表是更新数据
+        # 如果 instance 有对象则是修改数据 没有就是 新增数据
+        form_obj = model_form(instance=obj, data=request.POST)
+        if form_obj.is_valid():
+            form_obj.save()
+            return redirect("/myadmin/%s/%s/" % (app_name, model_name))
+
 
     return render(request, 'myadmin/table_obj_change.html',locals())
 
+#添加数据
+def table_obj_add(request,app_name,model_name):
+    admin_class = site.enabled_admins[app_name][model_name]
+    model_form = form_handle.create_dynamic_model_form(admin_class)
+    if request.method == "GET":
+        form_obj = model_form()
+    elif request.method == "POST":
+        form_obj = model_form(data=request.POST)
+        if form_obj.is_valid():
+            form_obj.save()
+            return redirect("/myadmin/%s/%s/" % (app_name, model_name))
+
+    return render(request,'myadmin/table_obj_add.html',locals())
 
 #登录
 def acc_login(request):
