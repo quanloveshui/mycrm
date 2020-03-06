@@ -7,6 +7,7 @@ class CustomerAdmin(BaseMyAdmin):
     list_display = ['id','name','source','consult_course','consultant','content','status','date']
     list_filter = ['source','consultant','status','date']
     search_fields = ['source','name']
+    readonly_fields = ['status']
 
 class RoleAdmin(BaseMyAdmin):
     list_display = ['name']

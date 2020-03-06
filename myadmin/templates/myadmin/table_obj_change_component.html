@@ -14,6 +14,18 @@
 
         <span style="color: red">{{ field.errors.0 }} </span>
 
+
+     {% if not admin_class.form_add %}   <!--如果这是修改表单,如果定义了readonly_fields需要单独写html处理-->
+          {% for field in admin_class.readonly_fields %}
+             <div class="form-group">
+             <label class="col-sm-2 control-label" >{{ field }}</label>
+                <div class="col-sm-8">
+                  <p>{% get_obj_field_val form_obj field %}</p>
+                </div>
+             </div>
+          {% endfor %}
+     {% endif %}
+
         <div class="form-group">
             <div class="col-sm-offset-11 col-sm-2">
                 <button type="submit" class="btn btn-info">Save</button>

@@ -182,3 +182,14 @@ def render_sorted_arrow(column,sorted_column):
 @register.simple_tag
 def get_current_sorted_column_index(sorted_column):
     return list(sorted_column.values())[0] if sorted_column else ''
+
+
+@register.simple_tag
+def get_obj_field_val(form_obj,field):
+    '''
+    返回model obj具体字段的值
+    field传入的是字符串，可以通过反射获取值
+    '''
+    #print(">>>>>>>>>>>>>>>>>>>",type(form_obj.instance)) #<class 'crm.models.Customer'>
+    #return getattr(form_obj.instance,field)#如果是非choice字段直接通过getattr获取对应的值
+    return getattr(form_obj.instance,'get_%s_display'% field)() #如果是choice字段获取对应的值

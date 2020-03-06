@@ -2,11 +2,19 @@ from django.forms import ModelForm
 
 
 #实现动态生成modelform
-def create_dynamic_model_form(admin_class):
+def create_dynamic_model_form(admin_class,form_add=False):
+    """
+    form_add为False时是修改的表单，默认为修改。为True时为添加
+     """
 
     class Meta:
         model = admin_class.model
         fields = "__all__"
+        if not form_add:#修改数据
+            exclude = admin_class.readonly_fields #排除不显示，另写htlm单独处理
+            admin_class.form_add = False#这是因为自始至终admin_class实例都是同一个,这里修改属性为False是为了避免上一次添加调用将其改为了True
+        else:#新增数据
+            admin_class.form_add = True
 
     #为动态modelform添加样式
     def __new__(cls, *args, **kwargs):
