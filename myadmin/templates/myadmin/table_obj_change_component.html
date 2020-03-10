@@ -26,13 +26,20 @@
           {% endfor %}
      {% endif %}
 
+
+
+
         <div class="form-group">
+            <!--修改时才显示delete-->
+            {% if not admin_class.form_add %}
             <div class=" col-sm-2">
                  <a  class="btn btn-danger" href="{% url 'obj_delete' app_name model_name form_obj.instance.id  %}">Delete</a>
             </div>
+            {% endif %}
             <div class="col-sm-offset-11 col-sm-2">
                 <button type="submit" class="btn btn-info">Save</button>
             </div>
         </div>
+
 
 </form>
