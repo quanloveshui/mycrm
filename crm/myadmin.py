@@ -8,6 +8,7 @@ class CustomerAdmin(BaseMyAdmin):
     list_filter = ['source','consultant','status','date']
     search_fields = ['source','name']
     readonly_fields = ['status']
+    filter_horizontal = ['consult_course' ]
 
 class RoleAdmin(BaseMyAdmin):
     list_display = ['name']

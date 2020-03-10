@@ -193,3 +193,74 @@ def get_obj_field_val(form_obj,field):
     #print(">>>>>>>>>>>>>>>>>>>",type(form_obj.instance)) #<class 'crm.models.Customer'>
     #return getattr(form_obj.instance,field)#如果是非choice字段直接通过getattr获取对应的值
     return getattr(form_obj.instance,'get_%s_display'% field)() #如果是choice字段获取对应的值
+
+
+'''
+@register.simple_tag
+def get_available_m2m_data(field_name,form_obj,admin_class):
+    """返回的是m2m字段关联表的所有数据"""
+
+    #获取字段对象可以通过model的_meta.get_field
+    field_obj = admin_class.model._meta.get_field(field_name)  #admin_class.model-><class 'crm.models.Customer'>
+
+
+    #print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>",field_obj)
+    #通过字段对象获取关联的model对象用related_model  field_obj-><django.db.models.fields.related.ForeignKey: consult_course>  field_obj.related_model->crm.models.Course
+    obj_list = set(field_obj.related_model.objects.all())
+
+    #print(">>>>>>>>>>>>>>>>>>>", type(form_obj.instance),form_obj.instance)
+    #form_obj.instance为model中的一个对象 如:models.Customer.objects.get(id='11')
+    #通过反射获取字段值
+    #print('>>>>>>>>>>>>>>>>>>>>',getattr(form_obj.instance ,field_name),'<<<<<<<<<<<<',type(getattr(form_obj.instance ,field_name)))
+    selected_data = set(getattr(form_obj.instance ,field_name).all())
+
+
+    return obj_list -selected_data
+
+@register.simple_tag
+def get_selected_m2m_data(field_name,form_obj,admin_class):
+    """返回已选的m2m数据"""
+
+    selected_data = getattr(form_obj.instance ,field_name).all()
+
+    return selected_data
+'''
+
+
+@register.simple_tag
+def display_all_related_objs(obj):
+    """
+    显示要被删除对象的所有关联对象
+    :param obj:
+    :return:
+    """
+    ele = "<ul>"
+    # ele += "<li><a href='/kingadmin/%s/%s/%s/change/'>%s</a></li>" %(obj._meta.app_label,
+    #                                                                  obj._meta.model_name,
+    #                                                                  obj.id,obj)
+
+    for reversed_fk_obj in obj._meta.related_objects:
+
+        related_table_name =  reversed_fk_obj.name
+        related_lookup_key = "%s_set" % related_table_name
+        related_objs = getattr(obj,related_lookup_key).all() #反向查所有关联的数据
+        ele += "<li>%s<ul> "% related_table_name
+
+        if reversed_fk_obj.get_internal_type() == "ManyToManyField":  # 不需要深入查找
+            for i in related_objs:
+                ele += "<li><a href='/kingadmin/%s/%s/%s/change/'>%s</a> 记录里与[%s]相关的的数据将被删除</li>" \
+                       % (i._meta.app_label,i._meta.model_name,i.id,i,obj)
+        else:
+            for i in related_objs:
+                #ele += "<li>%s--</li>" %i
+                ele += "<li><a href='/kingadmin/%s/%s/%s/change/'>%s</a></li>" %(i._meta.app_label,
+                                                                                 i._meta.model_name,
+                                                                                 i.id,i)
+                ele += display_all_related_objs(i)
+
+        ele += "</ul></li>"
+
+    ele += "</ul>"
+
+    return ele
+

@@ -27,7 +27,7 @@ def app_index(request):
 def get_filter_result(request,querysets):
     filter_conditions = {}
     for key,val in request.GET.items():
-        if key in ('_page', '_o', '_q'):#去掉关键字不作为过滤条件
+        if key in ('_page', '_o', '_q' ):#去掉关键字不作为过滤条件
             continue
         if val:
             filter_conditions[key] =  val
@@ -89,7 +89,7 @@ def table_obj_list(request,app_name,model_name):
 
     #print('request.GET>>>>>>>>>>>',request.GET) #<QueryDict: {'source': [''], 'consultant': [''], 'status': ['0'], 'date__gte': ['']}>
     #实现分页
-    paginator = Paginator(querysets, 3)# 每页2条记录
+    paginator = Paginator(querysets,3 )# 每页2条记录
     """
     per_page: 每页显示条目数量 例如上面的2
     count:    数据总个数
@@ -137,6 +137,7 @@ def table_obj_change(request,app_name,model_name,obj_id):
     if request.method == "GET":
         # 把要修改的对象通过 instance 传入form组件中   必须为本类的对象
         form_obj = model_form(instance=obj)
+
         #print(">>>>",list(form_obj)[0]) #<input type="text" name="name" value="客户2" maxlength="32" class="form-control" id="id_name">
     elif request.method == "POST":
         # 有instance代表是更新数据
@@ -162,6 +163,18 @@ def table_obj_add(request,app_name,model_name):
             return redirect("/myadmin/%s/%s/" % (app_name, model_name))
 
     return render(request,'myadmin/table_obj_add.html',locals())
+
+
+#删除数据
+@login_required
+def table_obj_delete(request,app_name,model_name,obj_id):
+    admin_class = site.enabled_admins[app_name][model_name]
+
+    obj = admin_class.model.objects.get(id=obj_id)
+    if request.method == "POST":
+        obj.delete()
+        return redirect("/myadmin/{app_name}/{model_name}/".format(app_name=app_name,model_name=model_name))
+    return render(request,'myadmin/table_obj_delete.html',locals())
 
 #登录
 def acc_login(request):
