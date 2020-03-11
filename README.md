@@ -20,3 +20,4 @@ django和bootstrap开发crm系统
     16、实现自定义某些字段不可修改
     17、完成数据删除及提示相关联的信息功能
     18、修复只有change时才显示delete按钮，add时不显示
+    19、完成用户可以自定义admin action功能

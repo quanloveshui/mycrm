@@ -8,7 +8,7 @@ register = Library()
 def build_filter_ele(filter_column,admin_class):
 
     column_obj = admin_class.model._meta.get_field(filter_column)
-    print("column obj:",column_obj)
+    #print("column obj:",column_obj)
     try:
         filter_ele = "<select name='%s'>" % filter_column
         for choice in column_obj.get_choices():

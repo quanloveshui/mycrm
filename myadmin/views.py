@@ -8,7 +8,7 @@ from crm import models
 from myadmin.sites import  site
 from django.db.models import Q
 from myadmin import form_handle
-
+import json
 
 app_setup.myadmin_auto_discover()
 """
@@ -16,6 +16,7 @@ django项目启动后会执行app_setup中myadmin_auto_discover函数，此函�
 每个app下的myadmin.py实现向我们自动定义的myadmin中注册model，实现在web页面上显示哪些表哪些表中列
 """
 #print("sites.",site.enabled_admins)
+
 
 @login_required
 def app_index(request):
@@ -75,6 +76,22 @@ def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
     admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类，未定义时使用默认的BaseAdmin类
     model_obj=admin_class.model#获取model中对应的的表对象--><class 'crm.models.Customer'>
+    print(">>>>>>>",admin_class.actions)
+    #if里执行用户定义的action
+    if request.method == "POST":
+        #print(request.POST)#<QueryDict: {'csrfmiddlewaretoken': ['F7K3yUHgYcevecTMnRhD1dgoZI87fRAwtLezgPvaKUw55Kge7g5oR6N2JgfaZPJ9'], 'action': ['change_status'], 'selected_ids': ['["11","10","9"]']}>
+        selected_action = request.POST.get('action')
+        selected_ids = json.loads(request.POST.get('selected_ids'))
+        #print(selected_action, selected_ids)
+        #获取对象
+        selected_objs = admin_class.model.objects.filter(id__in=selected_ids)
+        #print(selected_objs)#<QuerySet [<Customer: 客户1234>, <Customer: 客户234567jj>]>
+        #获取用户定义action对应的函数对象
+        admin_action_func = getattr(admin_class, selected_action)
+        #print(admin_action_func)#<bound method CustomerAdmin.change_status of <crm.myadmin.CustomerAdmin object at 0x0000000006B28320>>
+        #执行用户定义action对应的函数
+        admin_action_func(request, selected_objs)
+
     querysets = admin_class.model.objects.all().order_by("-id")#获取表中所有数据对象QuerySet集合 <QuerySet [<Customer: 客户1>, <Customer: 客户2>]>
     #print(querysets)
     querysets, filter_condtions = get_filter_result(request, querysets)
