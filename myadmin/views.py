@@ -142,7 +142,8 @@ def table_obj_list(request,app_name,model_name):
     #print('>>>>>>>>>>>>',request.GET) #<QueryDict: {'_page': ['2']}>
     # print("admin class",admin_class.model )
 
-    return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class,'sorted_column':sorted_column})
+    #return render(request, 'myadmin/table_obj_list.html', {'querysets': querysets, 'admin_class': admin_class,'sorted_column':sorted_column})
+    return render(request, 'myadmin/table_obj_list.html',locals())
 
 
 

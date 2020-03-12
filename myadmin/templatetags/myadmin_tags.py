@@ -183,6 +183,10 @@ def render_sorted_arrow(column,sorted_column):
 def get_current_sorted_column_index(sorted_column):
     return list(sorted_column.values())[0] if sorted_column else ''
 
+#获取中文
+@register.simple_tag
+def get_model_verbose_name(admin_class):
+    return admin_class.model._meta.verbose_name
 
 @register.simple_tag
 def get_obj_field_val(form_obj,field):
