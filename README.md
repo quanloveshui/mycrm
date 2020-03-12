@@ -22,3 +22,4 @@ django和bootstrap开发crm系统
     18、修复只有change时才显示delete按钮，add时不显示
     19、完成用户可以自定义admin action功能
     20、完成批量删除功能（通过定义默认的action实现）
+    21、新增面包屑导航
