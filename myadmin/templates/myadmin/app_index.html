@@ -15,8 +15,8 @@
                 {% for model_name in app_tables %}
                     <tr>
                         <td><a  href="{% url 'table_obj_list' app_name model_name %}">{{ model_name }}</a></td>
-                        <td>ADD</td>
-                        <td>Change</td>
+                        <td> <a href="{% url 'table_obj_add' app_name model_name %}" class="addlink glyphicon glyphicon-plus" aria-hidden="true">Add</a></td>
+                        <td><a  href="{% url 'table_obj_list' app_name model_name %}" class="addlink"> Change</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
