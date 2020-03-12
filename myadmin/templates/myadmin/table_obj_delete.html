@@ -3,21 +3,33 @@
 
 {% block  right-content-container %}
 <h2 class="page-header">{% get_model_name admin_class %}</h2>
-<h4 class="page-header alert-danger">注意:以下与{{ obj }}相关联的数据都将被删除!</h4>
+<h4 class="page-header alert-danger">注意:以下与{{ objs }}相关联的数据都将被删除!</h4>
 
 <div>
 
 
-{% display_all_related_objs obj  as all_related_obj_eles %}
-{{ all_related_obj_eles|safe }}
-
+{% for obj in objs  %}
+    {% display_all_related_objs obj  as all_related_obj_eles %}
+    {{ all_related_obj_eles|safe }}
+{% endfor %}
 
 
 
 
 <form method="post">{% csrf_token %}
+
+    <!--
+    批量删除时把数据给后端
+    querysets_ids是第一次选择数据后点击go按钮时传给后端action对应函数的id集合数据（如：传给delete_selected_objs函数，该函数render delete页面时把id数据再传过来）
+    -->
+    {% if querysets_ids %}
+    <input type="hidden" name="selected_ids" value="{{ querysets_ids }}">
+    {% endif %}
+
+
     <input type="submit" class="btn btn-danger" value="确认删除">
-    <a  class="btn btn-info"  href="{% url 'table_obj_change' app_name model_name obj.id  %}" >返回</a>
+
+    <a  class="btn btn-info" >返回</a>
 </form>
 
 </div>
