@@ -115,6 +115,7 @@ class ClassList(models.Model):
     teachers = models.ManyToManyField("UserProfile")
     start_date = models.DateField(verbose_name="开班日期")
     end_date = models.DateField(verbose_name="结业日期",blank=True,null=True)
+    contract_template = models.ForeignKey("ContractTemplate", blank=True, null=True,on_delete=models.CASCADE)#一个班级对应一个合同模板
 
     def __str__(self):
         return "%s %s %s" %(self.branch,self.course,self.semester)
@@ -177,14 +178,24 @@ class StudyRecord(models.Model):
         verbose_name_plural = "学习记录"
 
 
+class ContractTemplate(models.Model):
+    """
+    存储合同模板
+    合同和班级关联，一个班级对应一个合同模板
+    """
+    name = models.CharField(max_length=64)
+    content = models.TextField()
+    date = models.DateField(auto_now_add=True)
+
 class Enrollment(models.Model):
     '''报名表'''
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE)
     enrolled_class = models.ForeignKey("ClassList",verbose_name="所报班级",on_delete=models.CASCADE)
     consultant = models.ForeignKey("UserProfile",verbose_name="课程顾问",on_delete=models.CASCADE)
     contract_agreed = models.BooleanField(default=False,verbose_name="学员已同意合同条款")
+    contract_signed_date = models.DateTimeField(blank=True, null=True)
     contract_approved = models.BooleanField(default=False,verbose_name="合同已审核")
-    date = models.DateTimeField(auto_now_add=True)
+    contract_approved_date = models.DateTimeField(verbose_name="合同审核时间", blank=True, null=True)
 
     def __str__(self):
         return "%s %s" %(self.customer,self.enrolled_class)
@@ -197,6 +208,8 @@ class Payment(models.Model):
     '''缴费记录'''
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE)
     course = models.ForeignKey("Course",verbose_name="所报课程",on_delete=models.CASCADE)
+    payment_type_choices = ((0, '报名费'), (1, '学费'), (2, '退费'))
+    payment_type = models.SmallIntegerField(choices=payment_type_choices, default=0)
     amount = models.PositiveIntegerField(verbose_name="数额",default=500)
     consultant = models.ForeignKey("UserProfile",on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
