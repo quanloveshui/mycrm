@@ -178,6 +178,7 @@ class StudyRecord(models.Model):
         verbose_name_plural = "学习记录"
 
 
+
 class ContractTemplate(models.Model):
     """
     存储合同模板

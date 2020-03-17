@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+
+
+{% block right-content-container %}
+<h3>学员报名|合同审核</h3>
+
+
+
+<form class="form-horizontal" method="post" onsubmit="BeforeFormSubmit(this)">{% csrf_token %}
+
+
+
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">学员在线报名</h3>
+            </div>
+          <div class="panel-body">
+                  {% for field in customer_form %}
+                      <div class="form-group col-lg-6">
+                          <label class="col-sm-2  control-label">{{ field.label }}</label>
+                     <div class="col-sm-10">
+                          {{ field }}
+                          <span style="color: red;">{{ field.errors.0 }}</span>
+                     </div>
+                     </div>
+                   {% endfor %}
+
+
+                   {% for field in enrollment_form %}
+                      <div class="form-group col-lg-6">
+                          <label class="col-sm-2  control-label">{{ field.label }}</label>
+                     <div class="col-sm-10">
+                          {{ field }}
+                          <span style="color: red;">{{ field.errors.0 }}</span>
+                     </div>
+                     </div>
+                   {% endfor %}
+
+
+          </div>
+        </div>
+
+
+
+
+  <input type="submit" class="btn btn-success pull-right"  value="审核通过" >
+
+
+</form>
+
+
+
+
+<script>
+    function BeforeFormSubmit(ele) {
+        $(":disabled").removeAttr("disabled");
+
+
+    }
+
+</script>
+{% endblock %}
+
+
+
