@@ -187,6 +187,7 @@ class ContractTemplate(models.Model):
     content = models.TextField()
     date = models.DateField(auto_now_add=True)
 
+
 class Enrollment(models.Model):
     '''报名表'''
     customer = models.ForeignKey("Customer",on_delete=models.CASCADE)

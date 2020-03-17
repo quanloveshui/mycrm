@@ -27,3 +27,5 @@ admin.site.register(models.StudyRecord)
 admin.site.register(models.Tag)
 admin.site.register(models.UserProfile,UserProfileAdmin)
 admin.site.register(models.Menus)
+admin.site.register(models.ContractTemplate)
+
