@@ -134,3 +134,4 @@ os.path.join(BASE_DIR,'myadmin/statics'),
 
 LOGIN_URL = '/login/'
 CRM_FILE_UPLOAD_DIR = os.path.join(BASE_DIR,'crm/upload_files')
+AUTH_USER_MODEL = 'crm.UserProfile'
