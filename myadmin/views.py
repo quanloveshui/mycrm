@@ -9,6 +9,7 @@ from myadmin.sites import  site
 from django.db.models import Q
 from myadmin import form_handle
 import json
+from myadmin import permissions
 
 app_setup.myadmin_auto_discover()
 """
@@ -71,7 +72,8 @@ def get_serached_result(request,querysets,admin_class):
         return  querysets.filter(q)
     return querysets
 
-
+@permissions.check_permission
+@login_required
 def table_obj_list(request,app_name,model_name):
     #print("app_name,model_name:", site.enabled_admins[app_name][model_name]) #app_name,model_name: {'customer': <crm.myadmin.CustomerAdmin object at 0x0000000006B20CC0>, 'role': <myadmin.myadmin_base.BaseMyAdmin object at 0x0000000006B20CF8>}
     admin_class = site.enabled_admins[app_name][model_name]#注册时用户自定义的类，未定义时使用默认的BaseAdmin类
@@ -150,6 +152,7 @@ def table_obj_list(request,app_name,model_name):
 
 
 #编辑信息
+@permissions.check_permission
 @login_required
 def table_obj_change(request,app_name,model_name,obj_id):
     """
